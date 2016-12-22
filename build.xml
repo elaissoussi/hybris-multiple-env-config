@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<project name="config build">
+
+	<property name="platformhome" location=".."/>
+	<property name="hybris.config.dir" value="${platformhome}\config"/>
+	<property name="project.config.common.dir" value="${hybris.config.dir}\config_template\hybris\common"/>
+	
+	<property name="project.env" value="${env}"/>
+	<echo message="${env}"/>
+	<property name="project.config.envionment.dir" value="${hybris.config.dir}\config_template\hybris\env\${project.env}"/>
+
+	<!-- generate hybris configuration by concatenating env and common files -->
+	<taskdef  resource="net/sf/antcontrib/antlib.xml" classpath="${platformhome}/bin/platform/lib/ant-contrib-1.0b3.jar"/>
+	
+	<concat destfile="${hybris.config.dir}/local.properties" overwrite="yes">
+		<string>
+		##############################
+		# COMMON ENV CONFIGURATION
+		##############################
+		</string>
+		<filelist dir="${project.config.common.dir}" files="local.properties"/>
+		<string>
+		############################## 
+		# PROJECT ENV CONFIGURATION - [${project.env}]
+		##############################
+		</string>
+		<filelist dir="${project.config.envionment.dir}" files="local.properties"/>
+		
+	</concat>
+	
+	<!-- Copy the other configuration -->
+	<sequential>
+		<!-- Common -->
+		<copy todir="${hybris.config.dir}" overwrite="yes" verbose="true"> 
+				<fileset dir="${project.config.common.dir}">
+					<exclude name="local.properties"/>
+				</fileset>
+		</copy>
+		
+		<!-- Env -->
+		<copy todir="${hybris.config.dir}" overwrite="yes" verbose="true"> 
+				<fileset dir="${project.config.envionment.dir}">
+					<exclude name="local.properties"/>
+				</fileset>
+		</copy>
+	</sequential>
+</project>
